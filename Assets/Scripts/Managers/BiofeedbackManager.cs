@@ -1,16 +1,29 @@
 using UnityEngine;
 
+public enum BiofeedbackType
+{
+    Synchronous,
+    Asynchronous
+}
+
 public class BiofeedbackManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
+    public BiofeedbackType feedbackType;
+    public HeartRateManager heartrateManager;
+
+    public float DisplayedHeartRate { get; private set; }
+
     void Update()
     {
-        
+        if (feedbackType == BiofeedbackType.Synchronous)
+        {
+            DisplayedHeartRate = heartrateManager.CurrentHeartRate;
+        }
+
+        else if (feedbackType == BiofeedbackType.Asynchronous)
+        {
+            DisplayedHeartRate = 70f;
+        }
     }
 }
