@@ -12,10 +12,10 @@ public class OrbController : MonoBehaviour
 
     [Header("Orb Settings")]
     public float minScale = 0.8f;
-    public float maxScale = 1.3f;
+    public float maxScale = 1.2f;
 
-    public float minHeight = -0.2f;
-    public float maxHeight = 0.2f;
+    public float minHeight = -1f;
+    public float maxHeight = 1f;
 
     public Color lowHRColour = Color.blue;
     public Color highHRColour = Color.red;
@@ -37,7 +37,7 @@ public class OrbController : MonoBehaviour
     void Update()
     {
         float hr = biofeedbackManager.DisplayedHeartRate;
-        float hrNormalised = Mathf.InverseLerp(60f, 100f, hr);
+        float hrNormalised = Mathf.InverseLerp(68f, 76f, hr);
 
         // Diamater
         if (useDiameter)
@@ -57,8 +57,11 @@ public class OrbController : MonoBehaviour
 
         if (useColour && orbRenderer != null)
         {
-            orbRenderer.material.color =
-                Color.Lerp(lowHRColour, highHRColour, hrNormalised);
+            Color colour = Color.Lerp(lowHRColour, highHRColour, hrNormalised);
+
+            orbRenderer.material.SetColor("_BaseColour", colour);
+
+            orbRenderer.material.SetColor("_EmissionColor", colour);
         }
 
     }

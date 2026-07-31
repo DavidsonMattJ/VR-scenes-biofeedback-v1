@@ -12,7 +12,7 @@ public class HeartRateManager : MonoBehaviour
 
     void Start()
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "HeartRate.csv");
+        string path = Path.Combine(Application.streamingAssetsPath, "HeartRate_5min.csv");
         string[] lines = File.ReadAllLines(path);
         for (int i = 1; i < lines.Length; i++) 
         {
@@ -39,7 +39,9 @@ public class HeartRateManager : MonoBehaviour
         {
             if (elapsedTime >= times[i] && elapsedTime < times [i+1])
             {
-                CurrentHeartRate = heartRates[i];
+                float t = Mathf.InverseLerp(times[i], times[i + 1], elapsedTime);
+
+                CurrentHeartRate = Mathf.Lerp(heartRates[i], heartRates[i + 1], t);
                 return;
             }
         }
