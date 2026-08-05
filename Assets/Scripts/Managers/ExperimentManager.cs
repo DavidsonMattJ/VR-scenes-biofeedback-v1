@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 using static ExperimentManager;
 
 [System.Serializable]
@@ -117,17 +118,33 @@ public class ExperimentManager : MonoBehaviour
 
     public void ContinueExperiment()
     {
-        Debug.Log("Current trial index = " + currentTrialIndex);
-
-        if (currentTrialIndex >= trialConditions.Count)
+        switch (currentState)
         {
-            EndExperiment();
-            return;
+            case ExperimentState.PreMood:
+                currentCondition = trialConditions[currentTrialIndex];
+                currentState = ExperimentState.Environment;
+                LoadEnvironment(currentCondition.environment);
+                StartCoroutine(EnvironmentTimer());
+                break;
+
+            case ExperimentState.Environment:
+                currentState = ExperimentState.PostMood;
+                SceneManager.LoadScene("MoodScene");
+                break;
+
+            case ExperimentState.PostMood:
+                currentTrialIndex++;
+                if (currentTrialIndex >= trialConditions.Count)
+                {
+                    EndExperiment();
+                    return;
+                }
+
+                currentState = ExperimentState.PreMood;
+                SceneManager.LoadScene("MoodScene");
+                break;
         }
-        currentCondition = trialConditions[currentTrialIndex];
-        Debug.Log("Starting trial: " + currentCondition.environment + " - " + currentCondition.biofeedback);
-        currentTrialIndex++;
-        LoadEnvironment(currentCondition.environment);
+    
     }
 
     private void EndExperiment()
@@ -136,4 +153,13 @@ public class ExperimentManager : MonoBehaviour
         SceneManager.LoadScene("EndScene");
     }
 
+
+    private IEnumerator EnvironmentTimer()
+    {
+        yield return new WaitForSeconds(sceneDuration);
+        currentState = ExperimentState.PostMood;
+        SceneManager.LoadScene("MoodScene");
 }
+}
+
+

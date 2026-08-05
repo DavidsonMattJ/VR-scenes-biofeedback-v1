@@ -23,9 +23,9 @@ public class MoodScaleManager : MonoBehaviour
     public void Submit()
     {
 
-        float mood = moodSlider.value;
+        /*float mood = moodSlider.value;
         float calm = calmSlider.value;
-        float attention = attentionSlider.value;
+        float attention = attentionSlider.value;*/
         ExperimentManager.Instance.ContinueExperiment();
     }
 
