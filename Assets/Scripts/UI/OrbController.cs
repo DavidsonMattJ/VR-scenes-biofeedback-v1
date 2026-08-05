@@ -59,7 +59,7 @@ public class OrbController : MonoBehaviour
         {
             Color colour = Color.Lerp(lowHRColour, highHRColour, hrNormalised);
 
-            orbRenderer.material.SetColor("_BaseColour", colour);
+            orbRenderer.material.SetColor("_BaseColor", colour);
 
             orbRenderer.material.SetColor("_EmissionColor", colour);
         }
