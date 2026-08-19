@@ -112,7 +112,7 @@ public class ExperimentManager : MonoBehaviour
     {
         switch (environment)
         {
-            case EnvironmentType.Grey: SceneManager.LoadScene("UrbanScene");
+            case EnvironmentType.Grey: SceneManager.LoadScene("GreyScene");
                 break;
 
             case EnvironmentType.Rainforest: SceneManager.LoadScene("RainforestScene");

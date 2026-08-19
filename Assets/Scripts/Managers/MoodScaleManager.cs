@@ -10,7 +10,12 @@ public class MoodScaleManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(ExperimentManager.Instance.currentState == ExperimentManager.ExperimentState.PreMood)
+        if (question3 == null)
+        {
+            question3 = GameObject.Find("Question3");
+        }
+
+        if (ExperimentManager.Instance.currentState == ExperimentManager.ExperimentState.PreMood)
         {
             question3.SetActive(false);
         }
@@ -22,11 +27,14 @@ public class MoodScaleManager : MonoBehaviour
 
     public void Submit()
     {
-
         float mood = moodSlider.value;
         float calm = calmSlider.value;
         float attention = attentionSlider.value;
+
+        Debug.Log("Mood: " + mood);
+        Debug.Log("Calm: " + calm);
+        Debug.Log("Attention: " + attention);
+
         ExperimentManager.Instance.ContinueExperiment();
     }
-
 }
