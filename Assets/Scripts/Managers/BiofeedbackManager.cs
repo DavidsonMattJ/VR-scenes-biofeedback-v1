@@ -8,9 +8,10 @@ public enum BiofeedbackType
 
 public class BiofeedbackManager : MonoBehaviour
 {
-
     public BiofeedbackType feedbackType;
-    public HeartRateManager heartrateManager;
+
+    public PolarManager heartRateManager;
+    public FakeHeartRateManager fakeHeartRateManager;
 
     public float DisplayedHeartRate { get; private set; }
 
@@ -18,12 +19,11 @@ public class BiofeedbackManager : MonoBehaviour
     {
         if (feedbackType == BiofeedbackType.Synchronous)
         {
-            DisplayedHeartRate = heartrateManager.CurrentHeartRate;
+            DisplayedHeartRate = heartRateManager.CurrentHeartRate;
         }
-
         else if (feedbackType == BiofeedbackType.Asynchronous)
         {
-            DisplayedHeartRate = 70f;
+            DisplayedHeartRate = fakeHeartRateManager.CurrentHeartRate;
         }
     }
 }

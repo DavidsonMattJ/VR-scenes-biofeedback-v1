@@ -109,19 +109,24 @@ public class ExperimentManager : MonoBehaviour
     }
 
     private void LoadEnvironment(EnvironmentType environment)
+{
+    DataManager.Instance.SaveEvent("EnvironmentStart");
+
+    switch (environment)
     {
-        switch (environment)
-        {
-            case EnvironmentType.Grey: SceneManager.LoadScene("GreyScene");
-                break;
+        case EnvironmentType.Grey:
+            SceneManager.LoadScene("GreyScene");
+            break;
 
-            case EnvironmentType.Rainforest: SceneManager.LoadScene("RainforestScene");
-                break;
+        case EnvironmentType.Rainforest:
+            SceneManager.LoadScene("RainforestScene");
+            break;
 
-            case EnvironmentType.Urban: SceneManager.LoadScene("UrbanScene");
-                break;
-        }
+        case EnvironmentType.Urban:
+            SceneManager.LoadScene("UrbanScene");
+            break;
     }
+}
 
     public void ContinueExperiment()
     {
@@ -155,17 +160,24 @@ public class ExperimentManager : MonoBehaviour
     }
 
     private void EndExperiment()
-    {
-        Debug.Log("Experiment finished!");
-        SceneManager.LoadScene("EndScene");
-    }
+{
+    Debug.Log("Experiment finished!");
+
+    DataManager.Instance.SaveEvent("ExperimentEnd");
+
+    SceneManager.LoadScene("EndScene");
+}
 
 
     private IEnumerator EnvironmentTimer()
-    {
-        yield return new WaitForSeconds(sceneDuration);
-        currentState = ExperimentState.PostMood;
-        SceneManager.LoadScene("MoodScene");
+{
+    yield return new WaitForSeconds(sceneDuration);
+
+    DataManager.Instance.SaveEvent("EnvironmentEnd");
+
+    currentState = ExperimentState.PostMood;
+
+    SceneManager.LoadScene("MoodScene");
 }
 }
 

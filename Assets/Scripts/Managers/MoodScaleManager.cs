@@ -26,15 +26,35 @@ public class MoodScaleManager : MonoBehaviour
     }
 
     public void Submit()
+{
+    float mood = moodSlider.value;
+    float calm = calmSlider.value;
+    float attention = attentionSlider.value;
+
+    Debug.Log("Mood: " + mood);
+    Debug.Log("Calm: " + calm);
+    Debug.Log("Attention: " + attention);
+
+    string moodType = "";
+
+    if (ExperimentManager.Instance.currentState ==
+        ExperimentManager.ExperimentState.PreMood)
     {
-        float mood = moodSlider.value;
-        float calm = calmSlider.value;
-        float attention = attentionSlider.value;
-
-        Debug.Log("Mood: " + mood);
-        Debug.Log("Calm: " + calm);
-        Debug.Log("Attention: " + attention);
-
-        ExperimentManager.Instance.ContinueExperiment();
+        moodType = "PreMood";
     }
+    else if (ExperimentManager.Instance.currentState ==
+             ExperimentManager.ExperimentState.PostMood)
+    {
+        moodType = "PostMood";
+    }
+
+    DataManager.Instance.SaveMood(
+        moodType,
+        mood,
+        calm,
+        attention
+    );
+
+    ExperimentManager.Instance.ContinueExperiment();
+}
 }
