@@ -30,7 +30,7 @@ public class DataManager : MonoBehaviour
 
         string dataFolder = Path.Combine(projectPath, "ExperimentData");
 
-        participantFolder = Path.Combine(projectPath, ParticipantID);
+        participantFolder = Path.Combine(dataFolder, ParticipantID);
 
         Directory.CreateDirectory(participantFolder);
 

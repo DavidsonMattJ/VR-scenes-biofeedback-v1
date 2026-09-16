@@ -11,11 +11,11 @@ public class OrbController : MonoBehaviour
     public BiofeedbackManager biofeedbackManager;
 
     [Header("Orb Settings")]
-    public float minScale = 0.8f;
-    public float maxScale = 1.2f;
+    public float minScale = 0.5f;
+    public float maxScale = 10f;
 
-    public float minHeight = -1f;
-    public float maxHeight = 1f;
+    public float minHeight = -2f;
+    public float maxHeight = 2f;
 
     public Color lowHRColour = Color.blue;
     public Color highHRColour = Color.red;
@@ -39,7 +39,7 @@ public class OrbController : MonoBehaviour
         float hr = biofeedbackManager.DisplayedHeartRate;
 
         // Change these numbers to define your HR range
-        float hrNormalised = Mathf.InverseLerp(60f, 100f, hr);
+        float hrNormalised = Mathf.InverseLerp(65f, 80f, hr);
 
         if (useDiameter)
         {
