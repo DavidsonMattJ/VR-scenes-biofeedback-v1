@@ -23,9 +23,7 @@ public class OrbController : MonoBehaviour
     private Vector3 startScale;
     private Vector3 startPosition;
     private Renderer orbRenderer;
-    
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         startScale = transform.localScale;
@@ -33,13 +31,16 @@ public class OrbController : MonoBehaviour
         orbRenderer = GetComponent<Renderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        float hr = biofeedbackManager.DisplayedHeartRate;
-        float hrNormalised = Mathf.InverseLerp(68f, 76f, hr);
+        if (biofeedbackManager == null)
+            return;
 
-        // Diamater
+        float hr = biofeedbackManager.DisplayedHeartRate;
+
+        // Change these numbers to define your HR range
+        float hrNormalised = Mathf.InverseLerp(60f, 100f, hr);
+
         if (useDiameter)
         {
             float scale = Mathf.Lerp(minScale, maxScale, hrNormalised);
@@ -49,20 +50,24 @@ public class OrbController : MonoBehaviour
         if (useHeight)
         {
             float height = Mathf.Lerp(minHeight, maxHeight, hrNormalised);
+
             transform.localPosition = new Vector3(
                 startPosition.x,
                 startPosition.y + height,
-                startPosition.z);
+                startPosition.z
+            );
         }
 
         if (useColour && orbRenderer != null)
         {
-            Color colour = Color.Lerp(lowHRColour, highHRColour, hrNormalised);
+            Color colour = Color.Lerp(
+                lowHRColour,
+                highHRColour,
+                hrNormalised
+            );
 
             orbRenderer.material.SetColor("_BaseColor", colour);
-
             orbRenderer.material.SetColor("_EmissionColor", colour);
         }
-
     }
 }

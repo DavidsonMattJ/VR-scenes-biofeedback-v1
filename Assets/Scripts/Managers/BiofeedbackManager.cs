@@ -10,7 +10,7 @@ public class BiofeedbackManager : MonoBehaviour
 {
     public BiofeedbackType feedbackType;
 
-    public PolarManager heartRateManager;
+    public HeartRateManager heartRateManager;
     public FakeHeartRateManager fakeHeartRateManager;
 
     public float DisplayedHeartRate { get; private set; }

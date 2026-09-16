@@ -1,49 +1,121 @@
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
+using System.Diagnostics;
+using System.IO;
+using System.Globalization;
 
 public class HeartRateManager : MonoBehaviour
 {
-    List<float> heartRates = new List<float>();
-    List<float> times = new List<float>();
+    private Process pythonProcess;
 
-    private float elapsedTime = 0f;
     public float CurrentHeartRate { get; private set; }
+
+    private string csvPath;
+    private string stopFile;
 
     void Start()
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "HeartRate_5min.csv");
-        string[] lines = File.ReadAllLines(path);
-        for (int i = 1; i < lines.Length; i++) 
-        {
-            string[] values = lines[i].Split(',');
-            float time = float.Parse(values[0]);
-            float hr = float.Parse(values[1]);
-            times.Add(time);
-            heartRates.Add(hr);
+        DontDestroyOnLoad(gameObject);
 
-            Debug.Log("Loaded " + heartRates.Count + " heart rate samples");
-        }
+        // Find the Unity project folder
+        string projectPath =
+            Directory.GetParent(Application.dataPath).FullName;
+
+        // Participant folder created by ExperimentDataManager
+        string participantFolder =
+            DataManager.Instance.GetParticipantFolder();
+
+        // HR files for this participant
+        csvPath = Path.Combine(
+            participantFolder,
+            "heart_rate.csv"
+        );
+
+        stopFile = Path.Combine(
+            participantFolder,
+            "stop.txt"
+        );
+
+        // Python logger
+        string pythonPath = "python";
+
+        string scriptPath = Path.Combine(
+            projectPath,
+            "Python",
+            "HR LOG",
+            "ble_hr_logger.py"
+        );
+
+        string arguments =
+            $"\"{scriptPath}\" " +
+            $"--out-csv \"{csvPath}\" " +
+            $"--stop-file \"{stopFile}\" " +
+            $"--address CE:99:0C:02:19:B8";
+
+        ProcessStartInfo startInfo = new ProcessStartInfo
+        {
+            FileName = pythonPath,
+            Arguments = arguments,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        pythonProcess = Process.Start(startInfo);
+
+        UnityEngine.Debug.Log(
+            "HW706 heart-rate Python logger started."
+        );
     }
 
     void Update()
     {
-        elapsedTime += Time.deltaTime;
-        UpdateHeartRate();
-        Debug.Log(CurrentHeartRate);
+        ReadLatestHeartRate();
     }
 
-    void UpdateHeartRate()
+    void ReadLatestHeartRate()
     {
-        for (int i = 0; i < times.Count -1; i++)
-        {
-            if (elapsedTime >= times[i] && elapsedTime < times [i+1])
-            {
-                float t = Mathf.InverseLerp(times[i], times[i + 1], elapsedTime);
+        if (!File.Exists(csvPath))
+            return;
 
-                CurrentHeartRate = Mathf.Lerp(heartRates[i], heartRates[i + 1], t);
+        try
+        {
+            string[] lines =
+                File.ReadAllLines(csvPath);
+
+            if (lines.Length < 2)
                 return;
+
+            string latestLine =
+                lines[lines.Length - 1];
+
+            string[] values =
+                latestLine.Split(',');
+
+            // CSV format:
+            // timestamp, unix_s, bpm
+
+            if (values.Length >= 3 &&
+                float.TryParse(
+                    values[2],
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out float heartRate))
+            {
+                CurrentHeartRate = heartRate;
             }
+        }
+        catch
+        {
+            // Python may be writing to the CSV at this exact moment.
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (pythonProcess != null &&
+            !pythonProcess.HasExited)
+        {
+            pythonProcess.Kill();
+            pythonProcess.Dispose();
         }
     }
 }

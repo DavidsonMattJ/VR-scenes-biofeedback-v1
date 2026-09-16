@@ -8,7 +8,7 @@ public class DataManager : MonoBehaviour
 
     public string ParticipantID { get; private set; }
 
-    private string dataFolder;
+    private string participantFolder;
     private string eventsFile;
 
     private void Awake()
@@ -22,27 +22,24 @@ public class DataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Automatically create a unique participant/session ID
+        // create participant ID
         ParticipantID = "P_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-        // Save in a folder called ExperimentData next to the Unity project
+        // create participant folder
         string projectPath = Directory.GetParent(Application.dataPath).FullName;
 
-        dataFolder = Path.Combine(projectPath, "ExperimentData");
+        string dataFolder = Path.Combine(projectPath, "ExperimentData");
 
-        if (!Directory.Exists(dataFolder))
-        {
-            Directory.CreateDirectory(dataFolder);
-        }
+        participantFolder = Path.Combine(projectPath, ParticipantID);
 
-        eventsFile = Path.Combine(
-            dataFolder,
-            ParticipantID + "_events.csv"
-        );
+        Directory.CreateDirectory(participantFolder);
+
+        // events csv
+        eventsFile = Path.Combine(participantFolder,"events.csv" );
 
         CreateEventsFile();
 
-        Debug.Log("Experiment data folder: " + dataFolder);
+        Debug.Log("Participant folder: " + participantFolder);
         Debug.Log("Participant ID: " + ParticipantID);
     }
 
@@ -142,8 +139,8 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public string GetDataFolder()
+    public string GetParticipantFolder()
     {
-        return dataFolder;
+        return participantFolder;
     }
 }
