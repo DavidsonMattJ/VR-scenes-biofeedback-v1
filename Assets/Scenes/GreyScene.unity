@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 12641329}
   - component: {fileID: 12641328}
   - component: {fileID: 12641327}
+  - component: {fileID: 12641330}
   m_Layer: 0
   m_Name: Orb
   m_TagString: Untagged
@@ -227,6 +228,29 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12641325}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &12641330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 12641325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89fc3fc479924a54497aef997157b83c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useDiameter: 1
+  useHeight: 1
+  useColour: 1
+  biofeedbackManager: {fileID: 1705235751}
+  minScale: 0.5
+  maxScale: 1.25
+  minHeight: -1
+  maxHeight: 1
+  lowHRColour: {r: 0, g: 0, b: 1, a: 1}
+  highHRColour: {r: 1, g: 0, b: 0, a: 1}
+  smoothSpeed: 3
 --- !u!1 &369341270
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,104 +394,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &766260833
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 766260835}
-  - component: {fileID: 766260834}
-  m_Layer: 0
-  m_Name: OrbController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &766260834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 766260833}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89fc3fc479924a54497aef997157b83c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useDiameter: 1
-  useHeight: 1
-  useColour: 1
-  biofeedbackManager: {fileID: 1705235751}
-  minScale: 0.8
-  maxScale: 1.2
-  minHeight: -1
-  maxHeight: 1
-  lowHRColour: {r: 0, g: 0, b: 1, a: 1}
-  highHRColour: {r: 1, g: 0, b: 0, a: 1}
---- !u!4 &766260835
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 766260833}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &829227425
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 829227427}
-  - component: {fileID: 829227428}
-  m_Layer: 0
-  m_Name: HeartRateManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &829227427
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 829227425}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.859797, y: 5.608305, z: 18.84795}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &829227428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 829227425}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c72d47a5e1e1f48a3cb3d71fe55fcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &949874803
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,8 +790,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 705507995}
-  - {fileID: 829227427}
   - {fileID: 1705235752}
   - {fileID: 369341272}
   - {fileID: 1850752099}
-  - {fileID: 766260835}

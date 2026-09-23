@@ -16,10 +16,9 @@ public class HeartRateManager : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        // get participant folder
-        string participantFolder = DataManager.Instance.GetParticipantFolder();
+        string participantFolder =
+            DataManager.Instance.GetParticipantFolder();
 
-        // HR files for this participant
         csvPath = Path.Combine(
             participantFolder,
             "heart_rate.csv"
@@ -30,15 +29,11 @@ public class HeartRateManager : MonoBehaviour
             "stop.txt"
         );
 
-        // delete old stop file if one exists
-        if(File.Exists(stopFile))
-        {
+        if (File.Exists(stopFile))
             File.Delete(stopFile);
-        }
 
-        // find Python logger
-        string projectPath = Directory.GetParent(Application.dataPath).FullName;
-        string pythonPath = "python";
+        string projectPath =
+            Directory.GetParent(Application.dataPath).FullName;
 
         string scriptPath = Path.Combine(
             projectPath,
@@ -47,25 +42,22 @@ public class HeartRateManager : MonoBehaviour
             "ble_hr_logger.py"
         );
 
-        string arguments =
-            $"\"{scriptPath}\" " +
-            $"--out-csv \"{csvPath}\" " +
-            $"--stop-file \"{stopFile}\" " +
-            $"--address CE:99:0C:02:19:B8";
-
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
-            FileName = pythonPath,
-            Arguments = arguments,
+            FileName = "python",
+            Arguments =
+                $"\"{scriptPath}\" " +
+                $"--out-csv \"{csvPath}\" " +
+                $"--stop-file \"{stopFile}\" " +
+                $"--address CE:99:0C:02:19:B8",
             UseShellExecute = false,
             CreateNoWindow = true
         };
 
         pythonProcess = Process.Start(startInfo);
 
-        UnityEngine.Debug.Log(
-            "HW706 heart-rate Python logger started."
-        );
+        UnityEngine.Debug.Log("HR LOGGER STARTED");
+        UnityEngine.Debug.Log("READING HR FROM: " + csvPath);
     }
 
     void Update()
@@ -75,62 +67,103 @@ public class HeartRateManager : MonoBehaviour
 
     void ReadLatestHeartRate()
     {
+        if (string.IsNullOrEmpty(csvPath))
+            return;
+
         if (!File.Exists(csvPath))
             return;
 
         try
         {
-            string[] lines =
-                File.ReadAllLines(csvPath);
-
-            if (lines.Length < 2)
-                return;
-
-            string latestLine =
-                lines[lines.Length - 1];
-
-            string[] values =
-                latestLine.Split(',');
-
-            // CSV format:
-            // timestamp, unix_s, bpm
-
-            if (values.Length >= 3 &&
-                float.TryParse(
-                    values[2],
-                    NumberStyles.Float,
-                    CultureInfo.InvariantCulture,
-                    out float heartRate))
+            // Allow Unity to read the file while Python has it open.
+            using (FileStream stream = new FileStream(
+                csvPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite))
             {
-                CurrentHeartRate = heartRate;
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string latestValidLine = null;
+
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+
+                        if (line.StartsWith("timestamp"))
+                            continue;
+
+                        string[] values = line.Split(',');
+
+                        if (values.Length < 3)
+                            continue;
+
+                        string bpmText = values[2].Trim();
+
+                        if (float.TryParse(
+                            bpmText,
+                            NumberStyles.Float,
+                            CultureInfo.InvariantCulture,
+                            out float bpm))
+                        {
+                            latestValidLine = line;
+                        }
+                    }
+
+                    if (latestValidLine != null)
+                    {
+                        string[] values =
+                            latestValidLine.Split(',');
+
+                        if (float.TryParse(
+                            values[2].Trim(),
+                            NumberStyles.Float,
+                            CultureInfo.InvariantCulture,
+                            out float bpm))
+                        {
+                            CurrentHeartRate = bpm;
+                        }
+                    }
+                }
             }
         }
         catch
         {
-            // Python may be writing to the CSV at this exact moment.
+            // Python may be writing at this exact moment.
+            // Try again on the next frame.
         }
     }
 
     void OnApplicationQuit()
     {
+        if (!string.IsNullOrEmpty(stopFile))
+        {
+            try
+            {
+                File.WriteAllText(stopFile, "STOP");
+            }
+            catch
+            {
+            }
+        }
+
         if (pythonProcess != null)
         {
             try
             {
-                if(!pythonProcess.HasExited)
-                {
+                if (!pythonProcess.HasExited)
                     pythonProcess.WaitForExit(2000);
-                }
-                if(pythonProcess.HasExited)
-                {
+
+                if (!pythonProcess.HasExited)
                     pythonProcess.Kill();
-                }
 
                 pythonProcess.Dispose();
             }
             catch
             {
-
             }
         }
     }

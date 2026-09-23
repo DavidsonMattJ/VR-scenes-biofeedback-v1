@@ -19,18 +19,35 @@ public class BiofeedbackManager : MonoBehaviour
     public float delaySeconds = 10f;
 
     public float DisplayedHeartRate { get; private set; }
-    private Queue<HeartRateSample> heartRateHistory = new Queue<HeartRateSample>();
+
+    private Queue<HeartRateSample> heartRateHistory =
+        new Queue<HeartRateSample>();
 
     private class HeartRateSample
     {
         public float time;
         public float heartRate;
+
         public HeartRateSample(float time, float heartRate)
         {
             this.time = time;
             this.heartRate = heartRate;
         }
+    }
 
+    void Start()
+    {
+        // Automatically find the persistent HeartRateManager
+        if (heartRateManager == null)
+        {
+            heartRateManager =
+                FindFirstObjectByType<HeartRateManager>();
+        }
+
+        if (heartRateManager == null)
+        {
+            Debug.LogError("NO HEART RATE MANAGER FOUND");
+        }
     }
 
     void Update()
@@ -41,38 +58,45 @@ public class BiofeedbackManager : MonoBehaviour
         float currentTime = Time.time;
         float currentHR = heartRateManager.CurrentHeartRate;
 
-        // store current real hr
+        if (currentHR <= 0)
+            return;
+
         heartRateHistory.Enqueue(
             new HeartRateSample(currentTime, currentHR)
-            );
+        );
 
         if (feedbackType == BiofeedbackType.Synchronous)
         {
-            // show real hr data immediately
             DisplayedHeartRate = currentHR;
         }
-        else if (feedbackType == BiofeedbackType.Asynchronous)
+        else
         {
-            // find sample that is 10 sec old
             float targetTime = currentTime - delaySeconds;
-            while(
+
+            while (
                 heartRateHistory.Count > 1 &&
-                heartRateHistory.ToArray()[1].time <= targetTime)
+                heartRateHistory.ToArray()[1].time <= targetTime
+            )
             {
                 heartRateHistory.Dequeue();
             }
 
             if (heartRateHistory.Count > 0)
             {
-                HeartRateSample oldestSample = heartRateHistory.Peek();
+                HeartRateSample oldestSample =
+                    heartRateHistory.Peek();
+
                 if (oldestSample.time <= targetTime)
                 {
                     DisplayedHeartRate = oldestSample.heartRate;
                 }
-             }
+            }
         }
 
-        while(heartRateHistory.Count > 0 && heartRateHistory.Peek().time < currentTime - 60f)
+        while (
+            heartRateHistory.Count > 0 &&
+            heartRateHistory.Peek().time < currentTime - 60f
+        )
         {
             heartRateHistory.Dequeue();
         }

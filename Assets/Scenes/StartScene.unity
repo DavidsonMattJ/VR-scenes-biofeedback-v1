@@ -352,53 +352,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &468631800
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 468631802}
-  - component: {fileID: 468631801}
-  m_Layer: 0
-  m_Name: BiofeedbackManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &468631801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 468631800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3eb409a3645db9544bc92e1e35d0668b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  feedbackType: 0
-  heartRateManager: {fileID: 2129943250}
-  delaySeconds: 10
---- !u!4 &468631802
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 468631800}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 309.1402, y: 227, z: 9.423975}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &698651749
 GameObject:
   m_ObjectHideFlags: 0
@@ -930,7 +883,7 @@ MonoBehaviour:
     biofeedback: 0
   currentState: 0
   currentTrialIndex: 0
-  sceneDuration: 10
+  sceneDuration: 30
 --- !u!4 &1867711967
 Transform:
   m_ObjectHideFlags: 0
@@ -1074,6 +1027,5 @@ SceneRoots:
   - {fileID: 1867711967}
   - {fileID: 1538009199}
   - {fileID: 1798153739}
-  - {fileID: 468631802}
   - {fileID: 1263283246}
   - {fileID: 2129943251}
