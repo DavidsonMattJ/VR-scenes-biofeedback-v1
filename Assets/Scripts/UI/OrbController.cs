@@ -10,13 +10,19 @@ public class OrbController : MonoBehaviour
     [Header("Heart Rate Input")]
     public BiofeedbackManager biofeedbackManager;
 
-    [Header("Orb Settings")]
+    [Header("Heart Rate Range")]
+    public float lowHR = 65f;
+    public float highHR = 80f;
+
+    [Header("Orb Size")]
     public float minScale = 0.5f;
-    public float maxScale = 10f;
+    public float maxScale = 2.0f;
 
-    public float minHeight = -2f;
-    public float maxHeight = 2f;
+    [Header("Orb Height")]
+    public float minHeight = -0.5f;
+    public float maxHeight = 0.5f;
 
+    [Header("Orb Colour")]
     public Color lowHRColour = Color.blue;
     public Color highHRColour = Color.red;
 
@@ -26,9 +32,14 @@ public class OrbController : MonoBehaviour
 
     void Start()
     {
+        // Remember the original position and size of the sphere
         startScale = transform.localScale;
         startPosition = transform.localPosition;
+
+        // Get the Renderer from the normal Sphere
         orbRenderer = GetComponent<Renderer>();
+
+        Debug.Log("OrbController started.");
     }
 
     void Update()
@@ -36,38 +47,47 @@ public class OrbController : MonoBehaviour
         if (biofeedbackManager == null)
             return;
 
+        // Get the HR currently being displayed
         float hr = biofeedbackManager.DisplayedHeartRate;
 
-        // Change these numbers to define your HR range
-        float hrNormalised = Mathf.InverseLerp(65f, 80f, hr);
+        // Convert HR into a value from 0 to 1
+        // 65 BPM = 0
+        // 80 BPM = 1
+        float hrNormalised = Mathf.InverseLerp(
+            lowHR,
+            highHR,
+            hr
+        );
+
+        // -------------------------
+        // DIAMETER
+        // -------------------------
 
         if (useDiameter)
         {
-            float scale = Mathf.Lerp(minScale, maxScale, hrNormalised);
+            float scale = Mathf.Lerp( minScale,maxScale, hrNormalised );
+
             transform.localScale = startScale * scale;
         }
 
+        // -------------------------
+        // HEIGHT
+        // -------------------------
+
         if (useHeight)
         {
-            float height = Mathf.Lerp(minHeight, maxHeight, hrNormalised);
+            float height = Mathf.Lerp(minHeight,maxHeight,hrNormalised);
 
-            transform.localPosition = new Vector3(
-                startPosition.x,
-                startPosition.y + height,
-                startPosition.z
-            );
+            transform.localPosition = new Vector3(startPosition.x,startPosition.y + height,startPosition.z);
         }
 
-        if (useColour && orbRenderer != null)
-        {
-            Color colour = Color.Lerp(
-                lowHRColour,
-                highHRColour,
-                hrNormalised
-            );
+        // -------------------------
+        // COLOUR
+        // -------------------------
 
-            orbRenderer.material.SetColor("_BaseColor", colour);
-            orbRenderer.material.SetColor("_EmissionColor", colour);
-        }
+        if (useColour && orbRenderer != null) 
+        { 
+            Color colour; if (hr < (lowHR + highHR) / 2f) { colour = lowHRColour; } else { colour = highHRColour; } orbRenderer.material.color = colour; 
+            }
     }
 }
