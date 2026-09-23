@@ -3,33 +3,44 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
-using static ExperimentManager;
 
 [System.Serializable]
 public class TrialCondition
 {
-    public EnvironmentType environment;
+    public ExperimentManager.EnvironmentType environment;
     public BiofeedbackType biofeedback;
-    public TrialCondition(EnvironmentType environment, BiofeedbackType biofeedback)
+
+    public TrialCondition(
+        ExperimentManager.EnvironmentType environment,
+        BiofeedbackType biofeedback)
     {
         this.environment = environment;
         this.biofeedback = biofeedback;
     }
 }
+
 public class ExperimentManager : MonoBehaviour
 {
     public static ExperimentManager Instance;
-    public List<TrialCondition> trialConditions = new List<TrialCondition>();
+
+    public List<TrialCondition> trialConditions =
+        new List<TrialCondition>();
+
     public TrialCondition currentCondition;
-    public ExperimentState currentState = ExperimentState.PreMood;
+
+    public ExperimentState currentState =
+        ExperimentState.PreMood;
+
     public int currentTrialIndex = 0;
+
     public float sceneDuration = 10f;
+
     public enum ExperimentState
     {
         PreMood = 0,
         Environment = 1,
         PostMood = 2,
-        Finished = 3,
+        Finished = 3
     }
 
     public enum EnvironmentType
@@ -39,13 +50,8 @@ public class ExperimentManager : MonoBehaviour
         Urban = 2
     }
 
-    public enum BiofeedbackType
-    {
-        Synchronous = 0,
-        Asynchronous = 1
-    }
-
     private Coroutine trialTimer;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -57,13 +63,9 @@ public class ExperimentManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        Debug.Log("ExperimentManager Instance created: " + Instance);
-    }
-
-    public void StartExperiment()
-    {
-        currentState = ExperimentState.PreMood;
-        SceneManager.LoadScene("MoodScene");
+        Debug.Log(
+            "ExperimentManager Instance created: " + Instance
+        );
     }
 
     private void Start()
@@ -75,7 +77,14 @@ public class ExperimentManager : MonoBehaviour
         }
 
         Debug.Log("Experiment Ready!");
+    }
 
+    public void StartExperiment()
+    {
+        currentTrialIndex = 0;
+        currentState = ExperimentState.PreMood;
+
+        SceneManager.LoadScene("MoodScene");
     }
 
     private void CreateTrialConditions()
@@ -83,102 +92,164 @@ public class ExperimentManager : MonoBehaviour
         trialConditions.Clear();
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Grey, (global::BiofeedbackType)BiofeedbackType.Asynchronous));
+            new TrialCondition(
+                EnvironmentType.Grey,
+                global::BiofeedbackType.Asynchronous
+            )
+        );
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Grey, (global::BiofeedbackType)BiofeedbackType.Synchronous));
+            new TrialCondition(
+                EnvironmentType.Grey,
+                global::BiofeedbackType.Synchronous
+            )
+        );
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Rainforest, (global::BiofeedbackType)BiofeedbackType.Asynchronous));
+            new TrialCondition(
+                EnvironmentType.Rainforest,
+                global::BiofeedbackType.Asynchronous
+            )
+        );
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Rainforest, (global::BiofeedbackType)BiofeedbackType.Synchronous));
+            new TrialCondition(
+                EnvironmentType.Rainforest,
+                global::BiofeedbackType.Synchronous
+            )
+        );
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Urban, (global::BiofeedbackType)BiofeedbackType.Asynchronous));
+            new TrialCondition(
+                EnvironmentType.Urban,
+                global::BiofeedbackType.Asynchronous
+            )
+        );
 
         trialConditions.Add(
-            new TrialCondition(EnvironmentType.Urban, (global::BiofeedbackType)BiofeedbackType.Synchronous));
-
-        for (int i = 0; i < trialConditions.Count; i++) ;
+            new TrialCondition(
+                EnvironmentType.Urban,
+                global::BiofeedbackType.Synchronous
+            )
+        );
     }
 
     private void ShuffleConditions()
     {
-        trialConditions = trialConditions.OrderBy(condition => Random.value).ToList();
+        trialConditions =
+            trialConditions
+            .OrderBy(condition => Random.value)
+            .ToList();
     }
 
     private void LoadEnvironment(EnvironmentType environment)
-{
-    DataManager.Instance.SaveEvent("EnvironmentStart");
-
-    switch (environment)
     {
-        case EnvironmentType.Grey:
-            SceneManager.LoadScene("GreyScene");
-            break;
+        DataManager.Instance.SaveEvent("EnvironmentStart");
 
-        case EnvironmentType.Rainforest:
-            SceneManager.LoadScene("RainforestScene");
-            break;
+        switch (environment)
+        {
+            case EnvironmentType.Grey:
+                SceneManager.LoadScene("GreyScene");
+                break;
 
-        case EnvironmentType.Urban:
-            SceneManager.LoadScene("UrbanScene");
-            break;
+            case EnvironmentType.Rainforest:
+                SceneManager.LoadScene("RainforestScene");
+                break;
+
+            case EnvironmentType.Urban:
+                SceneManager.LoadScene("UrbanScene");
+                break;
+        }
     }
-}
 
     public void ContinueExperiment()
     {
         switch (currentState)
         {
+            // PRE-MOOD → FIRST ENVIRONMENT
             case ExperimentState.PreMood:
-                currentCondition = trialConditions[currentTrialIndex];
-                currentState = ExperimentState.Environment;
-                LoadEnvironment(currentCondition.environment);
+
+                currentCondition =
+                    trialConditions[currentTrialIndex];
+
+                currentState =
+                    ExperimentState.Environment;
+
+                LoadEnvironment(
+                    currentCondition.environment
+                );
+
                 StartCoroutine(EnvironmentTimer());
+
                 break;
 
+
+            // ENVIRONMENT → POST-MOOD
             case ExperimentState.Environment:
-                currentState = ExperimentState.PostMood;
+
+                currentState =
+                    ExperimentState.PostMood;
+
                 SceneManager.LoadScene("MoodScene");
+
                 break;
 
+
+            // POST-MOOD → NEXT ENVIRONMENT
             case ExperimentState.PostMood:
+
                 currentTrialIndex++;
+
+                // Are we finished?
                 if (currentTrialIndex >= trialConditions.Count)
                 {
                     EndExperiment();
                     return;
                 }
 
-                currentState = ExperimentState.PreMood;
-                SceneManager.LoadScene("MoodScene");
+                // Set up next condition
+                currentCondition =
+                    trialConditions[currentTrialIndex];
+
+                currentState =
+                    ExperimentState.Environment;
+
+                LoadEnvironment(
+                    currentCondition.environment
+                );
+
+                StartCoroutine(EnvironmentTimer());
+
                 break;
         }
-    
+    }
+
+    private IEnumerator EnvironmentTimer()
+    {
+        yield return new WaitForSeconds(sceneDuration);
+
+        DataManager.Instance.SaveEvent(
+            "EnvironmentEnd"
+        );
+
+        currentState =
+            ExperimentState.PostMood;
+
+        SceneManager.LoadScene("MoodScene");
     }
 
     private void EndExperiment()
-{
-    Debug.Log("Experiment finished!");
+    {
+        Debug.Log("Experiment finished!");
 
-    DataManager.Instance.SaveEvent("ExperimentEnd");
+        DataManager.Instance.SaveEvent(
+            "ExperimentEnd"
+        );
 
-    SceneManager.LoadScene("EndScene");
+        currentState =
+            ExperimentState.Finished;
+
+        SceneManager.LoadScene("EndScene");
+    }
 }
-
-
-    private IEnumerator EnvironmentTimer()
-{
-    yield return new WaitForSeconds(sceneDuration);
-
-    DataManager.Instance.SaveEvent("EnvironmentEnd");
-
-    currentState = ExperimentState.PostMood;
-
-    SceneManager.LoadScene("MoodScene");
-}
-}
-
 

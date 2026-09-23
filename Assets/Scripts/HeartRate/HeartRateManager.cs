@@ -16,13 +16,8 @@ public class HeartRateManager : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        // Find the Unity project folder
-        string projectPath =
-            Directory.GetParent(Application.dataPath).FullName;
-
-        // Participant folder created by ExperimentDataManager
-        string participantFolder =
-            DataManager.Instance.GetParticipantFolder();
+        // get participant folder
+        string participantFolder = DataManager.Instance.GetParticipantFolder();
 
         // HR files for this participant
         csvPath = Path.Combine(
@@ -35,7 +30,14 @@ public class HeartRateManager : MonoBehaviour
             "stop.txt"
         );
 
-        // Python logger
+        // delete old stop file if one exists
+        if(File.Exists(stopFile))
+        {
+            File.Delete(stopFile);
+        }
+
+        // find Python logger
+        string projectPath = Directory.GetParent(Application.dataPath).FullName;
         string pythonPath = "python";
 
         string scriptPath = Path.Combine(
@@ -111,11 +113,25 @@ public class HeartRateManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        if (pythonProcess != null &&
-            !pythonProcess.HasExited)
+        if (pythonProcess != null)
         {
-            pythonProcess.Kill();
-            pythonProcess.Dispose();
+            try
+            {
+                if(!pythonProcess.HasExited)
+                {
+                    pythonProcess.WaitForExit(2000);
+                }
+                if(pythonProcess.HasExited)
+                {
+                    pythonProcess.Kill();
+                }
+
+                pythonProcess.Dispose();
+            }
+            catch
+            {
+
+            }
         }
     }
 }
