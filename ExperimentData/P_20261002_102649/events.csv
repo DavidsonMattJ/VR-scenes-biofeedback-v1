@@ -1,0 +1,7 @@
+participant_id,event,trial_index,environment,biofeedback,scene,mood,calm,attention,timestamp
+P_20261002_102649,PreMood,0,Grey,Synchronous,GreyScene,0.7119047,0.5214283,0,2026-10-02 10:26:59.154
+P_20261002_102649,EnvironmentStart,0,Grey,Asynchronous,GreyScene,,,,2026-10-02 10:26:59.158
+P_20261002_102649,EnvironmentEnd,0,Grey,Asynchronous,GreyScene,,,,2026-10-02 10:27:29.755
+P_20261002_102649,PostMood,0,Grey,Asynchronous,GreyScene,0.8833333,0.9119047,0.9309523,2026-10-02 10:27:35.438
+P_20261002_102649,EnvironmentStart,1,Urban,Synchronous,UrbanScene,,,,2026-10-02 10:27:35.440
+P_20261002_102649,EnvironmentEnd,1,Urban,Synchronous,UrbanScene,,,,2026-10-02 10:28:12.210

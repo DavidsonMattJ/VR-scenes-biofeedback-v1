@@ -1,0 +1,15 @@
+participant_id,event,trial_index,environment,biofeedback,scene,mood,calm,attention,timestamp
+P_20261002_110520,PreMood,0,Grey,Synchronous,GreyScene,0,0,0,2026-10-02 11:05:31.146
+P_20261002_110520,EnvironmentStart,0,Urban,Synchronous,UrbanScene,,,,2026-10-02 11:05:31.150
+P_20261002_110520,EnvironmentEnd,0,Urban,Synchronous,UrbanScene,,,,2026-10-02 11:06:08.925
+P_20261002_110520,PostMood,0,Urban,Synchronous,UrbanScene,0,0,0,2026-10-02 11:09:06.155
+P_20261002_110520,EnvironmentStart,1,Urban,Asynchronous,UrbanScene,,,,2026-10-02 11:09:06.157
+P_20261002_110520,EnvironmentEnd,1,Urban,Asynchronous,UrbanScene,,,,2026-10-02 11:09:42.392
+P_20261002_110520,PostMood,1,Urban,Asynchronous,UrbanScene,0,0,0,2026-10-02 11:09:44.685
+P_20261002_110520,EnvironmentStart,2,Grey,Synchronous,GreyScene,,,,2026-10-02 11:09:44.687
+P_20261002_110520,EnvironmentEnd,2,Grey,Synchronous,GreyScene,,,,2026-10-02 11:10:14.893
+P_20261002_110520,PostMood,2,Grey,Synchronous,GreyScene,0,0,0,2026-10-02 11:10:16.639
+P_20261002_110520,EnvironmentStart,3,Grey,Asynchronous,GreyScene,,,,2026-10-02 11:10:16.642
+P_20261002_110520,EnvironmentEnd,3,Grey,Asynchronous,GreyScene,,,,2026-10-02 11:10:46.845
+P_20261002_110520,PostMood,3,Grey,Asynchronous,GreyScene,0,0,0,2026-10-02 11:10:56.853
+P_20261002_110520,EnvironmentStart,4,Rainforest,Asynchronous,RainforestScene,,,,2026-10-02 11:10:56.855

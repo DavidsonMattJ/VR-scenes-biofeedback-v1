@@ -246,11 +246,14 @@ MonoBehaviour:
   biofeedbackManager: {fileID: 1705235751}
   minScale: 0.5
   maxScale: 1.25
-  minHeight: -1
-  maxHeight: 1
+  minHeight: -1.5
+  maxHeight: 1.5
   lowHRColour: {r: 0, g: 0, b: 1, a: 1}
   highHRColour: {r: 1, g: 0, b: 0, a: 1}
   smoothSpeed: 3
+  floatAmount: 0.08
+  floatSpeed: 1.2
+  rotationSpeed: 10
 --- !u!1 &369341270
 GameObject:
   m_ObjectHideFlags: 0

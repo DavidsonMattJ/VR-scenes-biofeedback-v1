@@ -56467,7 +56467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   feedbackType: 0
-  heartRateManager: {fileID: 0}
+  heartRateManager: {fileID: 726856346}
   delaySeconds: 10
 --- !u!4 &236373527
 Transform:
@@ -64956,11 +64956,14 @@ MonoBehaviour:
   biofeedbackManager: {fileID: 236373526}
   minScale: 0.5
   maxScale: 1.25
-  minHeight: -1
-  maxHeight: 1
+  minHeight: -1.5
+  maxHeight: 1.5
   lowHRColour: {r: 0, g: 0, b: 1, a: 1}
   highHRColour: {r: 1, g: 0, b: 0, a: 1}
   smoothSpeed: 3
+  floatAmount: 0.08
+  floatSpeed: 1.2
+  rotationSpeed: 10
 --- !u!1001 &268968461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -171945,6 +171948,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 836082558680691243, guid: da89ed28c9fffb34abe3a356881a20e6, type: 3}
   m_PrefabInstance: {fileID: 726476292}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &726856345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 726856347}
+  - component: {fileID: 726856346}
+  m_Layer: 0
+  m_Name: HeartRateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &726856346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726856345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c72d47a5e1e1f48a3cb3d71fe55fcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &726856347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726856345}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 43.8676, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &726875846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -502102,5 +502149,6 @@ SceneRoots:
   - {fileID: 616279416}
   - {fileID: 2042694254}
   - {fileID: 1615105887}
+  - {fileID: 726856347}
   - {fileID: 236373527}
   - {fileID: 40017153}

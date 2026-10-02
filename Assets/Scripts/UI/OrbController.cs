@@ -13,8 +13,8 @@ public class OrbController : MonoBehaviour
     public float maxScale = 1.25f;
 
     [Header("Height")]
-    public float minHeight = -1f;
-    public float maxHeight = 1f;
+    public float minHeight = -1.5f;
+    public float maxHeight = 1.5f;
 
     [Header("Colour")]
     public Color lowHRColour = Color.blue;
@@ -22,6 +22,11 @@ public class OrbController : MonoBehaviour
 
     [Header("Smoothing")]
     public float smoothSpeed = 3f;
+
+    [Header("Floating")]
+    public float floatAmount = 0.08f;
+    public float floatSpeed = 1.2f;
+    public float rotationSpeed = 10f;
 
     private Vector3 startScale;
     private Vector3 startPosition;
@@ -50,7 +55,7 @@ public class OrbController : MonoBehaviour
         if (hr <= 0)
             return;
 
-        float hrNormalised = Mathf.InverseLerp(65f, 80f, hr);
+        float hrNormalised = Mathf.InverseLerp(65f, 120f, hr);
 
         // SIZE
         if (useDiameter)
@@ -71,7 +76,7 @@ public class OrbController : MonoBehaviour
                 startScale * currentScale;
         }
 
-        // HEIGHT
+        // HR CONTROLLED HEIGHT
         if (useHeight)
         {
             float targetHeight = Mathf.Lerp(
@@ -85,18 +90,29 @@ public class OrbController : MonoBehaviour
                 targetHeight,
                 Time.deltaTime * smoothSpeed
             );
-
-            transform.localPosition = new Vector3(
-                startPosition.x,
-                startPosition.y + currentHeight,
-                startPosition.z
-            );
         }
+
+        // FLOATING MOTION
+        float floatingOffset =
+            Mathf.Sin(Time.time * floatSpeed) * floatAmount;
+
+        transform.localPosition = new Vector3(
+            startPosition.x,
+            startPosition.y + currentHeight + floatingOffset,
+            startPosition.z
+        );
+
+        // SLOW ROTATION
+        transform.Rotate(
+            Vector3.up,
+            rotationSpeed * Time.deltaTime,
+            Space.Self
+        );
 
         // COLOUR
         if (useColour && orbRenderer != null)
         {
-            if (hr < 72.5f)
+            if (hr < 80f)
             {
                 orbRenderer.material.SetColor(
                     "_BaseColor",
