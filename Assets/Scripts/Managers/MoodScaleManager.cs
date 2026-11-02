@@ -7,54 +7,59 @@ public class MoodScaleManager : MonoBehaviour
     public Slider calmSlider;
     public Slider attentionSlider;
     public GameObject question3;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    private bool submitted;
+
     void Start()
     {
         if (question3 == null)
-        {
             question3 = GameObject.Find("Question3");
+
+        if (question3 == null)
+        {
+            Debug.LogError("[Mood] Question3 not found - assign it in the Inspector.");
+            return;
         }
 
-        if (ExperimentManager.Instance.currentState == ExperimentManager.ExperimentState.PreMood)
-        {
-            question3.SetActive(false);
-        }
-        else if (ExperimentManager.Instance.currentState == ExperimentManager.ExperimentState.PostMood)
-        {
-            question3.SetActive(true);
-        }
+        // Attention question is only asked after an environment.
+        question3.SetActive(
+            ExperimentManager.Instance.currentState ==
+            ExperimentManager.ExperimentState.PostMood);
     }
 
     public void Submit()
-{
-    float mood = moodSlider.value;
-    float calm = calmSlider.value;
-    float attention = attentionSlider.value;
-
-    Debug.Log("Mood: " + mood);
-    Debug.Log("Calm: " + calm);
-    Debug.Log("Attention: " + attention);
-
-    string moodType = "";
-
-    if (ExperimentManager.Instance.currentState ==
-        ExperimentManager.ExperimentState.PreMood)
     {
-        moodType = "PreMood";
-    }
-    else if (ExperimentManager.Instance.currentState ==
-             ExperimentManager.ExperimentState.PostMood)
-    {
-        moodType = "PostMood";
-    }
+        // A double click / double trigger press used to call ContinueExperiment twice,
+        // which could skip straight through an environment.
+        if (submitted)
+            return;
 
-    DataManager.Instance.SaveMood(
-        moodType,
-        mood,
-        calm,
-        attention
-    );
+        submitted = true;
 
-    ExperimentManager.Instance.ContinueExperiment();
-}
+        float mood = moodSlider.value;
+        float calm = calmSlider.value;
+
+        // Hidden question is recorded as blank rather than the slider's default value.
+        bool attentionAsked = question3 != null && question3.activeInHierarchy;
+        float attention = attentionAsked ? attentionSlider.value : float.NaN;
+
+        string moodType = "";
+
+        if (ExperimentManager.Instance.currentState ==
+            ExperimentManager.ExperimentState.PreMood)
+        {
+            moodType = "PreMood";
+        }
+        else if (ExperimentManager.Instance.currentState ==
+                 ExperimentManager.ExperimentState.PostMood)
+        {
+            moodType = "PostMood";
+        }
+
+        Debug.Log($"[Mood] {moodType}: mood={mood} calm={calm} attention={attention}");
+
+        DataManager.Instance.SaveMood(moodType, mood, calm, attention);
+
+        ExperimentManager.Instance.ContinueExperiment();
+    }
 }

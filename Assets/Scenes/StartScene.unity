@@ -265,6 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 393580323}
   - component: {fileID: 393580322}
+  - component: {fileID: 393580324}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -352,6 +353,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &393580324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393580321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &698651749
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,6 +901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 905329f12718a4746a1957aae901cc8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useInspectorOrder: 0
   trialConditions: []
   currentCondition:
     environment: 0
@@ -1000,9 +1025,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2129943249}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c72d47a5e1e1f48a3cb3d71fe55fcf, type: 3}
+  m_Script: {fileID: 11500000, guid: 04773bd06448b1748b6e4ba45e9019ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  source: 0
+  pythonExecutable: python
+  deviceAddress: CE:99:0C:02:19:B8
+  fakeCsvRelativePath: Python/fake_heart_rate.csv
+  loopFakeData: 1
+  staleAfterSeconds: 3
+  pollIntervalSeconds: 0.2
+  historySeconds: 120
 --- !u!4 &2129943251
 Transform:
   m_ObjectHideFlags: 0

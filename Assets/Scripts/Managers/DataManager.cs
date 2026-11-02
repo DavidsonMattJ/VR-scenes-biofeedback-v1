@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using System;
+using System.Globalization;
 
 public class DataManager : MonoBehaviour
 {
@@ -22,20 +23,15 @@ public class DataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // create participant ID
         ParticipantID = "P_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-        // create participant folder
         string projectPath = Directory.GetParent(Application.dataPath).FullName;
-
         string dataFolder = Path.Combine(projectPath, "ExperimentData");
-
         participantFolder = Path.Combine(dataFolder, ParticipantID);
 
         Directory.CreateDirectory(participantFolder);
 
-        // events csv
-        eventsFile = Path.Combine(participantFolder,"events.csv" );
+        eventsFile = Path.Combine(participantFolder, "events.csv");
 
         CreateEventsFile();
 
@@ -53,50 +49,68 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public void SaveMood(
-        string moodType,
-        float mood,
-        float calm,
-        float attention
-    )
+    /// <summary>
+    /// Condition columns are only filled while a trial is running or just finished.
+    /// (currentCondition is a serialized field, so it is never null - before this check
+    ///  the PreMood row was wrongly labelled Grey / Synchronous.)
+    /// </summary>
+    private void GetCondition(
+        out string environment,
+        out string biofeedback,
+        out string scene,
+        out int trialIndex)
     {
-        string environment = "";
-        string biofeedback = "";
-        string scene = "";
+        environment = "";
+        biofeedback = "";
+        scene = "";
+        trialIndex = -1;
 
-        if (ExperimentManager.Instance != null &&
-            ExperimentManager.Instance.currentCondition != null)
-        {
-            environment =
-                ExperimentManager.Instance.currentCondition.environment.ToString();
+        ExperimentManager exp = ExperimentManager.Instance;
 
-            biofeedback =
-                ExperimentManager.Instance.currentCondition.biofeedback.ToString();
+        if (exp == null)
+            return;
 
-            scene = environment + "Scene";
-        }
+        bool inTrial =
+            exp.currentState == ExperimentManager.ExperimentState.Environment ||
+            exp.currentState == ExperimentManager.ExperimentState.PostMood;
 
-        int trialIndex = -1;
+        if (!inTrial || exp.currentCondition == null)
+            return;
 
-        if (ExperimentManager.Instance != null)
-        {
-            trialIndex = ExperimentManager.Instance.currentTrialIndex;
-        }
+        trialIndex = exp.currentTrialIndex;
+        environment = exp.currentCondition.environment.ToString();
+        biofeedback = exp.currentCondition.biofeedback.ToString();
+        scene = environment + "Scene";
+    }
+
+    private static string Fmt(float value)
+    {
+        return float.IsNaN(value) ? "" : value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static string Now()
+    {
+        return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+    }
+
+    public void SaveMood(string moodType, float mood, float calm, float attention)
+    {
+        GetCondition(out string environment, out string biofeedback,
+                     out string scene, out int trialIndex);
 
         using (StreamWriter writer = new StreamWriter(eventsFile, true))
         {
-            writer.WriteLine(
-                $"{ParticipantID}," +
-                $"{moodType}," +
-                $"{trialIndex}," +
-                $"{environment}," +
-                $"{biofeedback}," +
-                $"{scene}," +
-                $"{mood}," +
-                $"{calm}," +
-                $"{attention}," +
-                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}"
-            );
+            writer.WriteLine(string.Join(",",
+                ParticipantID,
+                moodType,
+                trialIndex.ToString(),
+                environment,
+                biofeedback,
+                scene,
+                Fmt(mood),
+                Fmt(calm),
+                Fmt(attention),
+                Now()));
         }
 
         Debug.Log("Mood data saved.");
@@ -104,38 +118,20 @@ public class DataManager : MonoBehaviour
 
     public void SaveEvent(string eventName)
     {
-        string environment = "";
-        string biofeedback = "";
-
-        if (ExperimentManager.Instance != null &&
-            ExperimentManager.Instance.currentCondition != null)
-        {
-            environment =
-                ExperimentManager.Instance.currentCondition.environment.ToString();
-
-            biofeedback =
-                ExperimentManager.Instance.currentCondition.biofeedback.ToString();
-        }
-
-        int trialIndex = -1;
-
-        if (ExperimentManager.Instance != null)
-        {
-            trialIndex = ExperimentManager.Instance.currentTrialIndex;
-        }
+        GetCondition(out string environment, out string biofeedback,
+                     out string scene, out int trialIndex);
 
         using (StreamWriter writer = new StreamWriter(eventsFile, true))
         {
-            writer.WriteLine(
-                $"{ParticipantID}," +
-                $"{eventName}," +
-                $"{trialIndex}," +
-                $"{environment}," +
-                $"{biofeedback}," +
-                $"{environment}Scene," +
-                ",,," +
-                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}"
-            );
+            writer.WriteLine(string.Join(",",
+                ParticipantID,
+                eventName,
+                trialIndex.ToString(),
+                environment,
+                biofeedback,
+                scene,
+                "", "", "",
+                Now()));
         }
     }
 

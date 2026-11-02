@@ -8,6 +8,24 @@ public class OrbController : MonoBehaviour
 
     public BiofeedbackManager biofeedbackManager;
 
+    [Header("Heart-rate mapping")]
+    [Tooltip("HR at which the orb is smallest / lowest.")]
+    public float hrAtMin = 65f;
+    [Tooltip("HR at which the orb is largest / highest.")]
+    public float hrAtMax = 120f;
+    [Tooltip("ON: colour blends smoothly from low to high colour across hrAtMin–hrAtMax. " +
+             "OFF: hard switch at Colour Threshold BPM.")]
+    public bool continuousColour = true;
+    [Tooltip("Only used when Continuous Colour is off.")]
+    public float colourThresholdBPM = 80f;
+
+    [Header("Per-participant calibration")]
+    [Tooltip("When a baseline was measured at Start, the range becomes " +
+             "baseline - Below to baseline + Above, replacing Hr At Min / Max.")]
+    public bool useCalibration = true;
+    public float bpmBelowBaseline = 10f;
+    public float bpmAboveBaseline = 20f;
+
     [Header("Size")]
     public float minScale = 0.5f;
     public float maxScale = 1.25f;
@@ -34,6 +52,7 @@ public class OrbController : MonoBehaviour
 
     private float currentScale;
     private float currentHeight;
+    private float currentColourT = -1f; // -1 = not yet initialised
 
     void Start()
     {
@@ -43,89 +62,82 @@ public class OrbController : MonoBehaviour
 
         currentScale = 1f;
         currentHeight = 0f;
+
+        if (biofeedbackManager == null)
+            biofeedbackManager = FindFirstObjectByType<BiofeedbackManager>();
+
+        if (biofeedbackManager == null)
+            Debug.LogError("[Orb] No BiofeedbackManager in this scene - orb will not respond to HR.");
     }
 
     void Update()
     {
-        if (biofeedbackManager == null)
-            return;
+        float hr = biofeedbackManager != null ? biofeedbackManager.DisplayedHeartRate : 0f;
+        bool hasHR = hr > 0f;
 
-        float hr = biofeedbackManager.DisplayedHeartRate;
-
-        if (hr <= 0)
-            return;
-
-        float hrNormalised = Mathf.InverseLerp(65f, 120f, hr);
-
-        // SIZE
-        if (useDiameter)
+        // HR-driven size, height and colour only update when there is a value.
+        // (Previously the whole Update returned early, so the orb also stopped
+        //  floating/rotating - which made the start of async trials look different.)
+        if (hasHR)
         {
-            float targetScale = Mathf.Lerp(
-                minScale,
-                maxScale,
-                hrNormalised
-            );
+            float lo = hrAtMin, hi = hrAtMax;
+            HeartRateManager hrm = HeartRateManager.Instance;
 
-            currentScale = Mathf.Lerp(
-                currentScale,
-                targetScale,
-                Time.deltaTime * smoothSpeed
-            );
+            if (useCalibration && hrm != null && hrm.IsCalibrated)
+            {
+                lo = hrm.BaselineHR - bpmBelowBaseline;
+                hi = hrm.BaselineHR + bpmAboveBaseline;
+            }
 
-            transform.localScale =
-                startScale * currentScale;
+            float hrNormalised = Mathf.InverseLerp(lo, hi, hr);
+
+            if (useDiameter)
+            {
+                float targetScale = Mathf.Lerp(minScale, maxScale, hrNormalised);
+                currentScale = Mathf.Lerp(currentScale, targetScale, Time.deltaTime * smoothSpeed);
+                transform.localScale = startScale * currentScale;
+            }
+
+            if (useHeight)
+            {
+                float targetHeight = Mathf.Lerp(minHeight, maxHeight, hrNormalised);
+                currentHeight = Mathf.Lerp(currentHeight, targetHeight, Time.deltaTime * smoothSpeed);
+            }
+
+            if (useColour && orbRenderer != null)
+            {
+                Color c;
+
+                if (continuousColour)
+                {
+                    // Same smoothing as size/height, so all three cues move together.
+                    currentColourT = currentColourT < 0f
+                        ? hrNormalised
+                        : Mathf.Lerp(currentColourT, hrNormalised, Time.deltaTime * smoothSpeed);
+
+                    c = Color.Lerp(lowHRColour, highHRColour, currentColourT);
+                }
+                else
+                {
+                    c = hr < colourThresholdBPM ? lowHRColour : highHRColour;
+                }
+
+                Material m = orbRenderer.material;
+
+                // URP/HDRP Lit use _BaseColor; Built-in Standard uses _Color.
+                if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+                if (m.HasProperty("_Color")) m.SetColor("_Color", c);
+            }
         }
 
-        // HR CONTROLLED HEIGHT
-        if (useHeight)
-        {
-            float targetHeight = Mathf.Lerp(
-                minHeight,
-                maxHeight,
-                hrNormalised
-            );
-
-            currentHeight = Mathf.Lerp(
-                currentHeight,
-                targetHeight,
-                Time.deltaTime * smoothSpeed
-            );
-        }
-
-        // FLOATING MOTION
-        float floatingOffset =
-            Mathf.Sin(Time.time * floatSpeed) * floatAmount;
+        // Ambient motion always runs, in every condition.
+        float floatingOffset = Mathf.Sin(Time.time * floatSpeed) * floatAmount;
 
         transform.localPosition = new Vector3(
             startPosition.x,
             startPosition.y + currentHeight + floatingOffset,
-            startPosition.z
-        );
+            startPosition.z);
 
-        // SLOW ROTATION
-        transform.Rotate(
-            Vector3.up,
-            rotationSpeed * Time.deltaTime,
-            Space.Self
-        );
-
-        // COLOUR
-        if (useColour && orbRenderer != null)
-        {
-            if (hr < 80f)
-            {
-                orbRenderer.material.SetColor(
-                    "_BaseColor",
-                    lowHRColour
-                );
-            }
-            else
-            {
-                orbRenderer.material.SetColor(
-                    "_BaseColor",
-                    highHRColour
-                );
-            }
-        }
+        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.Self);
     }
 }

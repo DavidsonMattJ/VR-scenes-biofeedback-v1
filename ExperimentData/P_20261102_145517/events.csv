@@ -1,0 +1,18 @@
+participant_id,event,trial_index,environment,biofeedback,scene,mood,calm,attention,timestamp
+P_20261102_145517,TrialOrder_Grey-Asynchronous|Urban-Synchronous|Grey-Synchronous|Rainforest-Synchronous|Rainforest-Asynchronous|Urban-Asynchronous,-1,,,,,,,2026-11-02 14:56:05.150
+P_20261102_145517,BaselineHR_61.5,-1,,,,,,,2026-11-02 14:56:05.152
+P_20261102_145517,PreMood,-1,,,,0.5782213,0.6664834,,2026-11-02 14:56:08.694
+P_20261102_145517,EnvironmentStart,0,Grey,Asynchronous,GreyScene,,,,2026-11-02 14:56:08.695
+P_20261102_145517,FeedbackApplied_Asynchronous,0,Grey,Asynchronous,GreyScene,,,,2026-11-02 14:56:08.970
+P_20261102_145517,EnvironmentEnd,0,Grey,Asynchronous,GreyScene,,,,2026-11-02 14:56:38.978
+P_20261102_145517,PostMood,0,Grey,Asynchronous,GreyScene,0.5461785,0.3449031,0.5903094,2026-11-02 14:57:14.196
+P_20261102_145517,EnvironmentStart,1,Urban,Synchronous,UrbanScene,,,,2026-11-02 14:57:14.198
+P_20261102_145517,FeedbackApplied_Synchronous,1,Urban,Synchronous,UrbanScene,,,,2026-11-02 14:57:21.651
+P_20261102_145517,EnvironmentEnd,1,Urban,Synchronous,UrbanScene,,,,2026-11-02 14:57:51.357
+P_20261102_145517,PostMood,1,Urban,Synchronous,UrbanScene,0,0,0,2026-11-02 14:58:34.284
+P_20261102_145517,EnvironmentStart,2,Grey,Synchronous,GreyScene,,,,2026-11-02 14:58:34.286
+P_20261102_145517,FeedbackApplied_Synchronous,2,Grey,Synchronous,GreyScene,,,,2026-11-02 14:58:34.558
+P_20261102_145517,EnvironmentEnd,2,Grey,Synchronous,GreyScene,,,,2026-11-02 14:59:04.553
+P_20261102_145517,PostMood,2,Grey,Synchronous,GreyScene,0.4160882,0.5903094,0.3326233,2026-11-02 14:59:12.188
+P_20261102_145517,EnvironmentStart,3,Rainforest,Synchronous,RainforestScene,,,,2026-11-02 14:59:12.190
+P_20261102_145517,FeedbackApplied_Synchronous,3,Rainforest,Synchronous,RainforestScene,,,,2026-11-02 14:59:15.087

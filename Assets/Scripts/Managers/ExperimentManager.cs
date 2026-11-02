@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using System.Globalization;
 
 [System.Serializable]
 public class TrialCondition
@@ -23,6 +24,10 @@ public class ExperimentManager : MonoBehaviour
 {
     public static ExperimentManager Instance;
 
+    [Tooltip("Leave OFF for a fresh random order each participant. " +
+             "Turn ON only to run a fixed order typed into Trial Conditions below.")]
+    public bool useInspectorOrder = false;
+
     public List<TrialCondition> trialConditions =
         new List<TrialCondition>();
 
@@ -33,7 +38,19 @@ public class ExperimentManager : MonoBehaviour
 
     public int currentTrialIndex = 0;
 
+    [Tooltip("Seconds per environment. NOTE: the value set on the component in the " +
+             "start scene overrides this default - check it there.")]
     public float sceneDuration = 10f;
+
+    [Header("Per-participant calibration")]
+    [Tooltip("ON: Start is refused until there is enough clean heart-rate data for a baseline.")]
+    public bool requireCalibration = true;
+    [Tooltip("Baseline = median HR over this many seconds before Start is clicked.")]
+    public float calibrationSeconds = 60f;
+    [Tooltip("Minimum samples in that window (the strap sends about 1 per second).")]
+    public int minCalibrationSamples = 40;
+
+    private bool started;
 
     public enum ExperimentState
     {
@@ -62,76 +79,91 @@ public class ExperimentManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        Debug.Log(
-            "ExperimentManager Instance created: " + Instance
-        );
     }
 
     private void Start()
     {
-        if (trialConditions.Count == 0)
+        if (Instance != this) return;
+
+        // Previously the list was only built/shuffled if empty, so any entries left in
+        // the Inspector silently disabled randomisation.
+        if (!useInspectorOrder || trialConditions.Count == 0)
         {
             CreateTrialConditions();
             ShuffleConditions();
         }
+        else
+        {
+            Debug.LogWarning("[Experiment] Using FIXED trial order from the Inspector.");
+        }
 
-        Debug.Log("Experiment Ready!");
+        Debug.Log("[Experiment] Ready. Order: " + DescribeOrder());
+
+        if (sceneDuration < 60f)
+            Debug.LogWarning($"[Experiment] sceneDuration is {sceneDuration}s - is this a test value?");
     }
 
     public void StartExperiment()
     {
+        if (started)
+            return; // ignore double clicks
+
+        // Measure this participant's resting HR; the orb's range is centred on it.
+        HeartRateManager hrm = HeartRateManager.Instance;
+        float baseline = 0f;
+        int samples = 0;
+
+        bool calibrated =
+            hrm != null &&
+            hrm.TryCalibrate(calibrationSeconds, minCalibrationSamples, out baseline, out samples);
+
+        if (!calibrated)
+        {
+            string msg =
+                $"[Experiment] Calibration failed: {samples} heart-rate samples in the last " +
+                $"{calibrationSeconds}s (need {minCalibrationSamples}), or the signal is lost.";
+
+            if (requireCalibration)
+            {
+                Debug.LogError(msg + " Check the strap, wait, then click Start again.");
+                return;
+            }
+
+            Debug.LogWarning(msg + " Continuing with the fixed orb range.");
+        }
+        else
+        {
+            Debug.Log($"[Experiment] Baseline HR = {baseline:0.0} bpm from {samples} samples.");
+        }
+
+        started = true;
         currentTrialIndex = 0;
         currentState = ExperimentState.PreMood;
 
+        DataManager.Instance.SaveEvent("TrialOrder_" + DescribeOrder());
+        DataManager.Instance.SaveEvent(calibrated
+            ? "BaselineHR_" + baseline.ToString("0.0", CultureInfo.InvariantCulture)
+            : "BaselineHR_none");
+
         SceneManager.LoadScene("MoodScene");
+    }
+
+    private string DescribeOrder()
+    {
+        return string.Join("|",
+            trialConditions.Select(c => c.environment + "-" + c.biofeedback));
     }
 
     private void CreateTrialConditions()
     {
         trialConditions.Clear();
 
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Grey,
-                global::BiofeedbackType.Asynchronous
-            )
-        );
-
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Grey,
-                global::BiofeedbackType.Synchronous
-            )
-        );
-
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Rainforest,
-                global::BiofeedbackType.Asynchronous
-            )
-        );
-
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Rainforest,
-                global::BiofeedbackType.Synchronous
-            )
-        );
-
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Urban,
-                global::BiofeedbackType.Asynchronous
-            )
-        );
-
-        trialConditions.Add(
-            new TrialCondition(
-                EnvironmentType.Urban,
-                global::BiofeedbackType.Synchronous
-            )
-        );
+        foreach (EnvironmentType env in new[] {
+            EnvironmentType.Grey, EnvironmentType.Rainforest, EnvironmentType.Urban })
+        {
+            trialConditions.Add(new TrialCondition(env, BiofeedbackType.Asynchronous));
+            trialConditions.Add(new TrialCondition(env, BiofeedbackType.Synchronous));
+        }
     }
 
     private void ShuffleConditions()
@@ -162,64 +194,58 @@ public class ExperimentManager : MonoBehaviour
         }
     }
 
+    private void StartTrial()
+    {
+        currentCondition = trialConditions[currentTrialIndex];
+        currentState = ExperimentState.Environment;
+
+        Debug.Log($"[Experiment] Trial {currentTrialIndex + 1}/{trialConditions.Count}: " +
+                  $"{currentCondition.environment} / {currentCondition.biofeedback}");
+
+        LoadEnvironment(currentCondition.environment);
+
+        if (trialTimer != null)
+            StopCoroutine(trialTimer);
+
+        trialTimer = StartCoroutine(EnvironmentTimer());
+    }
+
     public void ContinueExperiment()
     {
         switch (currentState)
         {
-            // PRE-MOOD → FIRST ENVIRONMENT
+            // PRE-MOOD -> FIRST ENVIRONMENT
             case ExperimentState.PreMood:
-
-                currentCondition =
-                    trialConditions[currentTrialIndex];
-
-                currentState =
-                    ExperimentState.Environment;
-
-                LoadEnvironment(
-                    currentCondition.environment
-                );
-
-                StartCoroutine(EnvironmentTimer());
-
+                StartTrial();
                 break;
 
-
-            // ENVIRONMENT → POST-MOOD
+            // ENVIRONMENT -> POST-MOOD (only if something ends the scene early)
             case ExperimentState.Environment:
 
-                currentState =
-                    ExperimentState.PostMood;
+                if (trialTimer != null)
+                {
+                    StopCoroutine(trialTimer);
+                    trialTimer = null;
+                }
 
+                DataManager.Instance.SaveEvent("EnvironmentEndedEarly");
+
+                currentState = ExperimentState.PostMood;
                 SceneManager.LoadScene("MoodScene");
-
                 break;
 
-
-            // POST-MOOD → NEXT ENVIRONMENT
+            // POST-MOOD -> NEXT ENVIRONMENT
             case ExperimentState.PostMood:
 
                 currentTrialIndex++;
 
-                // Are we finished?
                 if (currentTrialIndex >= trialConditions.Count)
                 {
                     EndExperiment();
                     return;
                 }
 
-                // Set up next condition
-                currentCondition =
-                    trialConditions[currentTrialIndex];
-
-                currentState =
-                    ExperimentState.Environment;
-
-                LoadEnvironment(
-                    currentCondition.environment
-                );
-
-                StartCoroutine(EnvironmentTimer());
-
+                StartTrial();
                 break;
         }
     }
@@ -228,28 +254,26 @@ public class ExperimentManager : MonoBehaviour
     {
         yield return new WaitForSeconds(sceneDuration);
 
-        DataManager.Instance.SaveEvent(
-            "EnvironmentEnd"
-        );
+        trialTimer = null;
 
-        currentState =
-            ExperimentState.PostMood;
+        if (currentState != ExperimentState.Environment)
+            yield break;
+
+        DataManager.Instance.SaveEvent("EnvironmentEnd");
+
+        currentState = ExperimentState.PostMood;
 
         SceneManager.LoadScene("MoodScene");
     }
 
     private void EndExperiment()
     {
-        Debug.Log("Experiment finished!");
+        Debug.Log("[Experiment] Finished!");
 
-        DataManager.Instance.SaveEvent(
-            "ExperimentEnd"
-        );
+        DataManager.Instance.SaveEvent("ExperimentEnd");
 
-        currentState =
-            ExperimentState.Finished;
+        currentState = ExperimentState.Finished;
 
         SceneManager.LoadScene("EndScene");
     }
 }
-
