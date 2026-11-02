@@ -1,0 +1,28 @@
+15:39:58.869 [OUT] Connecting to HW706 at CE:99:0C:02:19:B8...
+15:40:04.931 [OUT] Connected!
+15:40:04.931 [OUT] Subscribing to heart-rate characteristic...
+15:40:04.977 [OUT] Subscribed! Logging HR to CSV.
+15:40:05.276 [OUT] HR: 65 bpm
+15:40:06.341 [OUT] HR: 65 bpm
+15:40:07.301 [OUT] HR: 65 bpm
+15:40:08.381 [OUT] HR: 65 bpm
+15:40:09.341 [OUT] HR: 65 bpm
+15:40:10.301 [OUT] HR: 65 bpm
+15:40:11.384 [OUT] HR: 65 bpm
+15:40:12.344 [OUT] HR: 65 bpm
+15:40:13.303 [OUT] HR: 65 bpm
+15:40:14.381 [OUT] HR: 65 bpm
+15:40:15.341 [OUT] HR: 65 bpm
+15:40:16.301 [OUT] HR: 65 bpm
+15:40:17.381 [OUT] HR: 65 bpm
+15:40:18.341 [OUT] HR: 65 bpm
+15:40:19.301 [OUT] HR: 65 bpm
+15:40:20.381 [OUT] HR: 65 bpm
+15:40:21.340 [OUT] HR: 65 bpm
+15:40:22.421 [OUT] HR: 65 bpm
+15:40:23.381 [OUT] HR: 67 bpm
+15:40:24.341 [OUT] HR: 67 bpm
+15:40:25.422 [OUT] HR: 67 bpm
+15:40:26.382 [OUT] HR: 68 bpm
+15:40:27.461 [OUT] HR: 69 bpm
+15:40:28.301 [OUT] HR: 69 bpm

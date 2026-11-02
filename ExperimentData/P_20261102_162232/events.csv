@@ -1,0 +1,3 @@
+participant_id,event,trial_index,environment,biofeedback,scene,mood,calm,attention,timestamp
+P_20261102_162232,TrialOrder_Grey-Asynchronous|Urban-Synchronous|Grey-Synchronous|Rainforest-Asynchronous|Urban-Asynchronous|Rainforest-Synchronous,-1,,,,,,,2026-11-02 16:22:54.311
+P_20261102_162232,BaselineHR_62.0,-1,,,,,,,2026-11-02 16:22:54.313

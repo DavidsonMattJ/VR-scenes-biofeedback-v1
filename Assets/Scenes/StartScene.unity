@@ -203,8 +203,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -404,7 +404,7 @@ RectTransform:
   m_GameObject: {fileID: 698651749}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 264273230}
@@ -509,6 +509,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 698651749}
   m_CullTransparentMesh: 1
+--- !u!1 &756953046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 756953048}
+  - component: {fileID: 756953047}
+  m_Layer: 0
+  m_Name: VRMode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &756953047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756953046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93bafa8ca1806347b503f18a7c33df2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playInVR: 1
+  vrRigPrefab: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+  disableLocomotion: 1
+  hideControllersWithoutUI: 1
+  trackingWaitSeconds: 3
+  uiDistance: 1.6
+  uiWidthMetres: 1.6
+  uiHeightOffset: -0.15
+  recenterKey: 32
+--- !u!4 &756953048
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756953046}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 100.06148, y: 30.086939, z: 45.297466}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &879937595
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,6 +755,7 @@ GameObject:
   - component: {fileID: 1538009198}
   - component: {fileID: 1538009197}
   - component: {fileID: 1538009196}
+  - component: {fileID: 1538009200}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -793,6 +847,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1538009200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1538009195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72c6019055f46d34d8708422ef68f22f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startButton: {fileID: 698651751}
+  tmpLabel: {fileID: 264273231}
+  legacyLabel: {fileID: 0}
+  experimentManager: {fileID: 1867711966}
+  waitingForSignalText: "Connecting to heart-rate sensor\u2026"
+  calibratingText: "Calibrating\u2026 please sit still and relax.\n{0} seconds remaining"
+  almostReadyText: "Calibrating\u2026 almost ready"
+  readyText: Press now to begin
+  signalLostText: "Heart-rate signal lost. Please sit still\u2026"
+  checkInterval: 0.5
 --- !u!1 &1798153736
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,6 +985,9 @@ MonoBehaviour:
   currentState: 0
   currentTrialIndex: 0
   sceneDuration: 30
+  requireCalibration: 1
+  calibrationSeconds: 10
+  minCalibrationSamples: 7
 --- !u!4 &1867711967
 Transform:
   m_ObjectHideFlags: 0
@@ -1035,7 +1114,7 @@ MonoBehaviour:
   loopFakeData: 1
   staleAfterSeconds: 3
   pollIntervalSeconds: 0.2
-  historySeconds: 120
+  historySeconds: 20
 --- !u!4 &2129943251
 Transform:
   m_ObjectHideFlags: 0
@@ -1062,3 +1141,4 @@ SceneRoots:
   - {fileID: 1798153739}
   - {fileID: 1263283246}
   - {fileID: 2129943251}
+  - {fileID: 756953048}

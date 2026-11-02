@@ -1,0 +1,14 @@
+participant_id,event,trial_index,environment,biofeedback,scene,mood,calm,attention,timestamp
+P_20261102_171144,TrialOrder_Grey-Synchronous|Rainforest-Asynchronous|Grey-Asynchronous|Urban-Asynchronous|Urban-Synchronous|Rainforest-Synchronous,-1,,,,,,,2026-11-02 17:12:03.499
+P_20261102_171144,BaselineHR_67.5,-1,,,,,,,2026-11-02 17:12:03.502
+P_20261102_171144,PreMood,-1,,,,0,0,,2026-11-02 17:12:09.513
+P_20261102_171144,EnvironmentStart,0,Grey,Synchronous,GreyScene,,,,2026-11-02 17:12:09.516
+P_20261102_171144,FeedbackApplied_Synchronous,0,Grey,Synchronous,GreyScene,,,,2026-11-02 17:12:09.796
+P_20261102_171144,EnvironmentEnd,0,Grey,Synchronous,GreyScene,,,,2026-11-02 17:12:39.781
+P_20261102_171144,PostMood,0,Grey,Synchronous,GreyScene,0.3353253,0.5674649,0.5685242,2026-11-02 17:13:01.012
+P_20261102_171144,EnvironmentStart,1,Rainforest,Asynchronous,RainforestScene,,,,2026-11-02 17:13:01.013
+P_20261102_171144,FeedbackApplied_Asynchronous,1,Rainforest,Asynchronous,RainforestScene,,,,2026-11-02 17:13:07.706
+P_20261102_171144,EnvironmentEnd,1,Rainforest,Asynchronous,RainforestScene,,,,2026-11-02 17:13:37.858
+P_20261102_171144,PostMood,1,Rainforest,Asynchronous,RainforestScene,0.6024251,0.6901931,0.9258129,2026-11-02 17:13:46.005
+P_20261102_171144,EnvironmentStart,2,Grey,Asynchronous,GreyScene,,,,2026-11-02 17:13:46.006
+P_20261102_171144,FeedbackApplied_Asynchronous,2,Grey,Asynchronous,GreyScene,,,,2026-11-02 17:13:46.290
